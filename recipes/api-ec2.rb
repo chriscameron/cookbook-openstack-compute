@@ -40,6 +40,12 @@ platform_options['api_ec2_packages'].each do |pkg|
 end
 
 service 'nova-api-ec2' do
+  case node["platform"]
+  when "ubuntu"
+    if node["platform_version"].to_f >= 14.04
+      provider Chef::Provider::Service::Upstart
+    end
+  end
   service_name platform_options['api_ec2_service']
   supports status: true, restart: true
   subscribes :restart, resources('template[/etc/nova/nova.conf]')
